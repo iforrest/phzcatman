@@ -1,0 +1,233 @@
+{
+    "appid": "b2fc2520-68b6-478d-abb9-d6f46e0fb5cc",
+    "name": "ZCatman",
+    "description": "App for maintaining Phantom demo systems",
+    "type": "virtualization",
+    "product_vendor": "Splunk",
+    "logo": "zcatman.png",
+    "logo_dark": "zcatman_dark.png",
+    "product_name": "ZCatman",
+    "python_version": "3",
+    "product_version_regex": ".*",
+    "publisher": "Splunk",
+    "license": "Copyright (c) 2020 Splunk Inc.",
+    "app_version": "1.0.0",
+    "utctime_updated": "2020-06-18T17:26:23.065341Z",
+    "package_name": "phantom_zcatman",
+    "main_module": "zcatman_connector.pyc",
+    "min_phantom_version": "4.8.23319",
+    "app_wizard_version": "1.0.0",
+    "configuration": {
+        "github_base_url": {
+            "description": "Github Base URL (e.g., https://api.github.com)",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "https://api.github.com",
+            "order": 0
+        },
+        "github_repo_path": {
+            "description": "Github Repo Path (e.g., /iforrest/phantom_demo)",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "/iforrest/phantom_demo",
+            "order": 1
+        },
+        "github_tarball_path": {
+            "description": "Github Tarball Path (e.g., /tarball/master)",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "/tarball/master",
+            "order": 2
+        },
+        "github_personal_access_token": {
+            "description": "Github personal access token",
+            "data_type": "password",
+            "required": false,
+            "order": 3
+        },
+        "phantom_api_key": {
+            "description": "Phantom API Key (must had admin role)",
+            "data_type": "password",
+            "required": true,
+            "order": 4
+        },
+        "phantom_base_url": {
+            "description": "Phantom Base URL",
+            "data_type": "string",
+            "required": true,
+            "order": 5
+        },
+        "phantom_username": {
+            "description": "Phantom Admin User",
+            "data_type": "string",
+            "required": true,
+            "order": 6
+        },
+        "phantom_password": {
+            "description": "Phantom Admin Password",
+            "data_type": "password",
+            "required": true,
+            "order": 7
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "verbose": "",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update object",
+            "identifier": "update_object",
+            "description": "Update/Add and existing demo object",
+            "verbose": "Will overwrite existing object",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "github_path": {
+                    "description": "Path to github demo object (example: /assets/zscaler.json)",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.github_path",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "github_path",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "load demo data",
+            "identifier": "load_demo_data",
+            "description": "Load demo data from github",
+            "verbose": "This will delete all existing demo records for the object type specified (or if none specified then ALL the demo objects) and upload from github.\n\nPrerequisites:\n* Phantom Base URL must be configured in Administration\n* demo_configuration label must have been configured already",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "object_types": {
+                    "description": "demo objects type to load (comma separated)",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "default": "",
+                    "order": 0
+                },
+                "exclude_object_types": {
+                    "description": "object types to exclude (comma separated)",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": []
+                },
+                "replacement_json": {
+                    "description": "json to run create time replacement on values",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.exclude_object_types",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.object_type",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "object_type",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.object_types",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.replacement_json",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        }
+    ]
+}
