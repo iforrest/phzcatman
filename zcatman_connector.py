@@ -432,7 +432,7 @@ class ZcatmanConnector(BaseConnector):
             filter_params = {
                 '_filter_name__iexact': '"{}"'.format(object_data['name'])
             }
-            endpoint = '/rest/workflow_template'
+            endpoint = '/rest/workbook_template'
         elif object_type == 'demo_config__containers':
             filter_params = {
                 '_filter_id': '{}'.format(object_data['container_id'])
@@ -481,6 +481,7 @@ class ZcatmanConnector(BaseConnector):
 
         for root, dirs, files in os.walk(assets_dir[0]):
             for file_ in files:
+                print(file_)
                 with open(os.path.join(root, file_), 'r') as asset_file:
                     asset_file_data = asset_file.read()
                 status, response = self.seek_and_destroy('asset', json.loads(asset_file_data))
@@ -524,7 +525,7 @@ class ZcatmanConnector(BaseConnector):
                 payload = {'playbook': playbook_file_data.decode('utf-8'), 'scm': 'local', 'force': True}
                 status, response = self._rest_call(self.get_phantom_base_url_formatted(), '/rest/import_playbook', json=payload, headers=self.phantom_header, method='post')
                 if not(status):
-                    return status, 'Unable to load playbooks. File - {}. Details - {}'.format(file_, (str(response) if response else 'None'))
+                    return status, 'Unable to load playbooks. File - {}. Details - {}. Payload - {}'.format(file_, (str(response) if response else 'None'), str(payload))
 
         return True, 'Successfully loaded playbooks'
 
@@ -543,7 +544,7 @@ class ZcatmanConnector(BaseConnector):
                 workflow_template_id = ''
                 if len(response) > 0:
                     workflow_template_id = '/{}'.format(response[0]['id'])
-                status, response = self._rest_call(self.get_phantom_base_url_formatted(), '/rest/workflow_template{}'.format(workflow_template_id), data=response_template_data, headers=self.phantom_header, method='post')
+                status, response = self._rest_call(self.get_phantom_base_url_formatted(), '/rest/workbook_template{}'.format(workflow_template_id), data=response_template_data, headers=self.phantom_header, method='post')
                 if not(status):
                     return status, 'Unable to load response templates. File - {}. Details - {}'.format(file_, (str(response) if response else 'None'))
 
@@ -564,7 +565,7 @@ class ZcatmanConnector(BaseConnector):
         
         object_list = ['roles', 'users', 'assets', 'compiled_apps', 'demo_config__containers', 'playbooks', 'response_templates', 'seed_containers', 'custom_functions']
         object_types = param.get('object_types', '').split(',')
-        exclude_object_list = param.get('excluded_object_types', '').split(',')
+        exclude_object_list = param.get('exclude_object_types', '').split(',')
 
         if len([type_ for type_ in object_types if type_]) > 0:
             object_list = [type_.strip().lower() for type_ in object_types if type_]
