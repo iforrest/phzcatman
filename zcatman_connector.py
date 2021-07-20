@@ -30,6 +30,7 @@ import json
 from base64 import b64encode
 import uuid
 import time
+import subprocess
 
 class RetVal(tuple):
 
@@ -486,7 +487,7 @@ class ZcatmanConnector(BaseConnector):
                     asset_file_data = asset_file.read()
                 status, response = self.seek_and_destroy('asset', json.loads(asset_file_data))
                 if not(status):
-                    return status, 'Unable to check existance asset data. File - {}. Details - {}'.format(file_, response)
+                    return status, 'Unable to check existing asset data. File - {}. Details - {}'.format(file_, response)
                 asset_file_data = asset_file_data.replace('$$$PH_AUTH_TOKEN$$$', config['phantom_api_key']).replace('$$$PH_SERVER_NAME$$$', self.get_phantom_base_url_formatted().replace('https://', '').replace('http://', ''))
                 asset_status, asset_response = self._rest_call(self.get_phantom_base_url_formatted(), '/rest/asset', data=asset_file_data, headers=self.phantom_header, method='post')
                 if not(asset_status):
@@ -641,6 +642,26 @@ class ZcatmanConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully loaded phantom demo data")
 
+    def _handle_run_setup_script(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        config = self.get_config()
+        phantom_key=config['phantom_api_key']
+        phantom_ip=config['phantom_ip']
+        git_user=config['github_user']
+        git_pass=config['github_password']
+        settings_filename = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'admin_settings.py')
+        stdout, stderr = subprocess.Popen(['phenv', 'python3.6', settings_filename, phantom_key, phantom_ip, git_user, git_pass], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        # phantom_ip=sys.argv[2]
+        # git_user=sys.argv[3]
+        # git_pass=sys.argv[4]
+
+        if stderr:
+            self.debug_print('setup error', stderr)
+
+
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully loaded phantom demo data")
+
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS
 
@@ -652,8 +673,8 @@ class ZcatmanConnector(BaseConnector):
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
 
-        elif action_id == 'list_vms':
-            ret_val = self._handle_list_vms(param)
+        elif action_id == 'run_setup_script':
+            ret_val = self._handle_run_setup_script(param)
 
         elif action_id == 'update_object':
             ret_val = self._handle_update_object(param)

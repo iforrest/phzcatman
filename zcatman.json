@@ -71,6 +71,24 @@
             "data_type": "password",
             "required": true,
             "order": 7
+        },
+        "phantom_ip": {
+            "description": "Phantom IP",
+            "data_type": "string",
+            "required": true,
+            "order": 8
+        },
+        "github_user": {
+            "description": "Github username",
+            "data_type": "string",
+            "required": true,
+            "order": 9
+        },
+        "github_password": {
+            "description": "Github password",
+            "data_type": "password",
+            "required": true,
+            "order": 9
         }
     },
     "actions": [
@@ -83,6 +101,33 @@
             "read_only": true,
             "parameters": {},
             "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "run setup script",
+            "identifier": "run_setup_script",
+            "description": "Run the setup script",
+            "verbose": "",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {},
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "example_values": [
+                        "success"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                }
+            ],
             "versions": "EQ(*)"
         },
         {
